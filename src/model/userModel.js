@@ -19,8 +19,7 @@ const UserSchema = mongoose.Schema(
       required: true,
     },
     role: {
-      default: 100,
-      enum: [120, 1], 
+      default: 100, // 101 - teacher 102 - admin
     },
     profilePicture: {
       type: Object,
