@@ -11,9 +11,13 @@ const authMiddleware = (req, res, next) => {
     token = req.header("Authorization").split(" ")(1);
     const decoded = JWT.verify(token, process.env.JWT_SECRET_KEY);
     req.user = decoded
-
-    if(decoded.role === 1) {
+    if(decoded.role === 101) {
+      req.currentUserTeacher = true;
+      res.redirect("/teacher")
+    }
+    if(decoded.role === 102) {
       req.currentUserAdmin = true;
+      res.redirect("/admin")
     }
     next();
   } catch (error) {

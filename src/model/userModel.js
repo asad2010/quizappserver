@@ -20,12 +20,15 @@ const UserSchema = mongoose.Schema(
     },
     role: {
       default: 100, // 101 - teacher 102 - admin
+      enum: [100, 101, 102] 
     },
     profilePicture: {
       type: Object,
       default: "",
     },
-  }
+    allow: {type: Boolean, default: false}
+  },
+  {timestamps: true}
 )
 
 module.exports = mongoose.model("User", UserSchema)

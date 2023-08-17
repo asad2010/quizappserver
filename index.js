@@ -12,7 +12,7 @@ const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     // origin: "*",
-    origin: "",
+    origin: "*",
     // methoda: ["GET", "POST"],
   }
 });
@@ -32,7 +32,6 @@ const MONGO_URL = process.env.MONGO_URL;
 mongoose.connect(MONGO_URL,{
   useNewURLParser: true,
   useUnifiedTopology: true,
-  family:4
 }).then(() => {
   server.listen(PORT, () => console.log(`Server listened on port: ${PORT}`))
 }).catch(error => console.log(error))
