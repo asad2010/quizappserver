@@ -8,10 +8,10 @@ const userCtrl = {
     // Student
     viewExams: async (req, res) => {
         const exams = await Exams.find();
-        res.json(exams)
+        res.send(exams)
     },
     viewProfile: async (req,res) => {
-        
+        const info = await Users.findOne()
     },
     // Teacher 
 
@@ -29,6 +29,11 @@ const userCtrl = {
     viewCategories: async (req, res) => {
         const categories = await Categories.find()
         res.json(categories)
+    },
+    viewOneCategory: async (req,res) =>{
+        const {categoryName} = req.params;
+        const category = await Categories.findOne({categoryName})
+        res.send(category)
     },
     viewTeachers: async (req, res) => {
         const teachers = await Users.find({ role: 101 })
