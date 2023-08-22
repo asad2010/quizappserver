@@ -7,58 +7,86 @@ const Categories = require("../model/categoryModel");
 const userCtrl = {
     // Student
     viewExams: async (req, res) => {
-        const exams = await Exams.find();
-        res.send(exams)
+        try {
+            const exams = await Exams.find();
+            res.send(exams)
+        } catch (error) {
+            console.error(error)
+            res.send({ message: "Something went wrong..." })
+        }
     },
-    viewProfile: async (req,res) => {
-        // console.log(req.headers)
-        // console.log(req.headers.email)
-        if(!req.headers.email) return res.status(403).send({message: "Nimadur xato ketti"})
-        const info = await Users.findOne({email: req.headers.email})
-        res.send(info)
-    },  
+    viewProfile: async (req, res) => {
+        try {
+            const {id} = req.params;
+            const user = await Users.findById(id)
+            const {password, ...otherData} = user
+            res.send(otherData._doc)
+        } catch (error) {
+            console.error(error)
+            res.send({ message: "Something went wrong..." })
+        }
+    },
     // Teacher 
 
     // Admin
 
     // V I E W
     viewStudents: async (req, res) => {
-        const students = await Users.find({ role: 100 });
-        res.json(students)
+        try {
+            const students = await Users.find({ role: 100 });
+            res.json(students)
+        } catch (error) {
+            console.error(error)
+            res.status(403).send({ message: "Something went wrong..." })
+        }
     },
     viewGroups: async (req, res) => {
         const groups = await Groups.find();
         res.json(groups)
     },
     viewCategories: async (req, res) => {
-          if(req.files) {
-           if(req.files.profilePicture) {
-            const profilePicture = req.files.profilePicture;
-            if(profilePicture.mimetype != "image/png") {
-                removeTemp(profilePicture.tempFilePath);
-                return res.status(400).json({message: "File format is should png"})
-            }
+        if (req.files) {
+            if (req.files.profilePicture) {
+                const profilePicture = req.files.profilePicture;
+                if (profilePicture.mimetype != "image/png") {
+                    removeTemp(profilePicture.tempFilePath);
+                    return res.status(400).json({ message: "File format is should png" })
+                }
 
-            const img = await uploadedFile(profilePicture);
-            req.body.profilePicture = img;
-            if(Users.profilePicture.public_id) {
-                await deleteFile(Users.profilePicture.public_id)
+                const img = await uploadedFile(profilePicture);
+                req.body.profilePicture = img;
+                if (Users.profilePicture.public_id) {
+                    await deleteFile(Users.profilePicture.public_id)
+                }
             }
-           } 
-        }     
+        }
         const categories = await Categories.find()
         res.json(categories)
     },
-    viewOneCategory: async (req,res) =>{
-        const {categoryName} = req.params;
-        const category = await Categories.findOne({categoryName})
+    viewOneCategory: async (req, res) => {
+        const { id } = req.params;
+        const category = await Categories.findOne({ id })
         res.send(category)
     },
     viewTeachers: async (req, res) => {
-        const teachers = await Users.find({ role: 101 })
-        res.json(teachers)
+        try {
+            const teachers = await Users.find({ role: 101 })
+            res.json(teachers)
+        } catch (error) {
+            console.error(error)
+            res.send({ message: "Something went wrong..." })
+        }
     },
-
+    viewOneTeacher: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const teacher = await Users.findById(id)
+            res.send(teacher)
+        } catch (error) {
+            console.error(error)
+            res.send({ message: "Something went wrong..." })
+        }
+    },
     // A D D
     addGroup: async (req, res) => {
         const { groupName, teacher, company } = req.body;
@@ -82,6 +110,10 @@ const userCtrl = {
     addTeacher: async (req, res) => {
         try {
             const { firstName, lastName, email, password } = req.body;
+            const isTeacherExists = await Users.find({ email })
+            if (isTeacherExists) {
+                return res.status(403).send({ message: "Teacher already exists" })
+            }
             const teacher = await Users.create({
                 firstName,
                 lastName,
@@ -95,24 +127,53 @@ const userCtrl = {
             res.send({ message: "Something went wrong..." })
         }
     },
-    addCategory: async (req,res) => {
-        const {categoryName, categoryImg} = req.body;
+    addCategory: async (req, res) => {
+        const {id} = req.params;
+        const { categoryName} = req.body;
         try {
-            const category = await Users.create({
+            const category = await Categories.create({
                 categoryName,
                 categoryImg
             })
             res.send({ message: "Category created successfully" })
         } catch (error) {
             console.error(error)
-            res.send({message: "Something went wrong"})
+            res.send({ message: "Something went wrong" })
+        }
+    },
+    addQuestion: async (req,res) => {
+        try {
+            const {question, variantOne, variantTwo, variantThree, rightVariant} = req.body;
+            const newQuestion = await Questions.create({
+                
+            })
+        } catch (error) {
+            console.error(error)
+            res.send({ message: "Something went wrong" })
         }
     },
     // U P D A T E
     updStudent: async (req, res) => {
+        const {id} = req.params;
         try {
+            const { firstName, lastName, group, profilePicture } = req.body;
+            await Users.findByIdAndUpdate(id, {
+                firstName,
+                lastName,
+                group,
+                profilePicture
+            })
+            res.send({ message: "User successfully updated" })
+        } catch (error) {
+            console.error(error)
+            res.send({ message: "Something went wrong..." })
+        }
+    },
+    updStudentAdmin: async (req, res) => {
+        try {
+            const { id } = req.params;
             const { firstName, lastName, group, password, profilePicture } = req.body;
-            await Users.findByIdAndUpdate(req.body.id, {
+            await Users.findByIdAndUpdate(id, {
                 firstName,
                 lastName,
                 group,
@@ -180,7 +241,7 @@ const userCtrl = {
             res.send({ message: "Something went wrong..." })
         }
     },
-    delExam: async (req,res) => {
+    delExam: async (req, res) => {
         const { id } = req.params;
         try {
             await Exams.findByIdAndDelete(id)

@@ -14,7 +14,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(fileupload({ useTempFiles: true }));
 
-app.set('view engi')
 // routers
 app.use("/", authRouter)
 app.use("/", userRouter)
@@ -28,7 +27,6 @@ async function start() {
     await mongoose.connect(process.env.MONGO_URL, {
       useNewURLParser: true,
       useUnifiedTopology: true,
-      family: 4
     });
     app.listen(PORT, () => { console.log(`Server listened on port: ${PORT}`) })
   } catch (error) {

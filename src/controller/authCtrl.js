@@ -28,9 +28,7 @@ const authCtrl = {
       const token = JWT.sign({email: user.email, id: user._id, role: user.role}, JWT_SECRET_KEY, {expiresIn: "50h"});
 
       const {password, ...otherDetails} = user._doc;
-      res.header("Email", user.email)
-      res.status(201).json({user: otherDetails, token})
-
+      res.status(201).json({message: "Signup successfully", user: otherDetails, token})
     } catch (error) {
       res.status(500).json({message: error.message})
     }
@@ -53,7 +51,7 @@ const authCtrl = {
 
       const {password, ...otherDetails} = existingUser._doc;
       res.header("Email", existingUser.email)
-      res.status(200).json({user: otherDetails, token})
+      res.status(200).json({message: "login successfully!", user: otherDetails, token})
       
     } catch (error) {
       res.status(500).json({message: error.message})

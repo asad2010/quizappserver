@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const UserSchema = mongoose.Schema(
   {
     firstName: {
@@ -10,7 +9,7 @@ const UserSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    group: {type: String},
+    group: {type: String, ref: 'Group'},
     email: {
       type: String,
       required: true,
@@ -28,7 +27,8 @@ const UserSchema = mongoose.Schema(
       type: Object,
       default: "",
     },
-    allow: {type: Boolean, default: false}
+    allow: {type: Boolean, default: false},
+    history: {type: Object, ref: "History"}
   },
   {timestamps: true}
 )
