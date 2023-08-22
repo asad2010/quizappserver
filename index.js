@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const authRouter = require("./src/routers/authRouter")
 const userRouter = require("./src/routers/userRouter")
-
+const categoryRouter = require("./src/routers/categoryRouter")
 dotenv.config();
 const app = express()
 
@@ -17,7 +17,7 @@ app.use(fileupload({ useTempFiles: true }));
 // routers
 app.use("/", authRouter)
 app.use("/", userRouter)
-
+app.use("/admin", categoryRouter)
 // server
 const PORT = process.env.PORT || 4005;
 const MONGO_URL = process.env.MONGO_URL;
