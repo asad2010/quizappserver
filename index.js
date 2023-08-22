@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(fileupload({ useTempFiles: true }));
 
+app.set('view engi')
 // routers
 app.use("/", authRouter)
 app.use("/", userRouter)

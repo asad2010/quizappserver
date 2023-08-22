@@ -11,8 +11,12 @@ const userCtrl = {
         res.send(exams)
     },
     viewProfile: async (req,res) => {
-        const info = await Users.findOne()
-    },
+        // console.log(req.headers)
+        // console.log(req.headers.email)
+        if(!req.headers.email) return res.status(403).send({message: "Nimadur xato ketti"})
+        const info = await Users.findOne({email: req.headers.email})
+        res.send(info)
+    },  
     // Teacher 
 
     // Admin

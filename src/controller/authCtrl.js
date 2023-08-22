@@ -28,7 +28,7 @@ const authCtrl = {
       const token = JWT.sign({email: user.email, id: user._id, role: user.role}, JWT_SECRET_KEY, {expiresIn: "50h"});
 
       const {password, ...otherDetails} = user._doc;
-      res.header("Your-Email", user.email)
+      res.header("Email", user.email)
       res.status(201).json({user: otherDetails, token})
 
     } catch (error) {
@@ -52,7 +52,7 @@ const authCtrl = {
       const token = JWT.sign({email: existingUser.email, id: existingUser._id, role: existingUser.role}, JWT_SECRET_KEY, {expiresIn: "50h"});
 
       const {password, ...otherDetails} = existingUser._doc;
-      res.header("Your-Email", existingUser.email)
+      res.header("Email", existingUser.email)
       res.status(200).json({user: otherDetails, token})
       
     } catch (error) {
