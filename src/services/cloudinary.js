@@ -45,4 +45,4 @@ const deleteFile = async (public_id) => {
   }
 }
 
-module.exports = (uploadedFile, deleteFile, removeTemp)
+module.exports = {uploadedFile, deleteFile, removeTemp}
