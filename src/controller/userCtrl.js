@@ -31,6 +31,21 @@ const userCtrl = {
         res.json(groups)
     },
     viewCategories: async (req, res) => {
+          if(req.files) {
+           if(req.files.profilePicture) {
+            const profilePicture = req.files.profilePicture;
+            if(profilePicture.mimetype != "image/png") {
+                removeTemp(profilePicture.tempFilePath);
+                return res.status(400).json({message: "File format is should png"})
+            }
+
+            const img = await uploadedFile(profilePicture);
+            req.body.profilePicture = img;
+            if(Users.profilePicture.public_id) {
+                await deleteFile(Users.profilePicture.public_id)
+            }
+           } 
+        }     
         const categories = await Categories.find()
         res.json(categories)
     },
