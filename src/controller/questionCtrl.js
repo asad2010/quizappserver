@@ -1,4 +1,4 @@
-const Question = require("../model/questionModel")
+const Questions = require("../model/questionModel")
 
 
 const questionCtrl = {
