@@ -13,11 +13,9 @@ const authMiddleware = (req, res, next) => {
     req.user = decoded
     if(decoded.role === 101) {
       req.currentUserTeacher = true;
-      res.redirect("/teacher")
     }
     if(decoded.role === 102) {
       req.currentUserAdmin = true;
-      res.redirect("/admin")
     }
     next();
   } catch (error) {
