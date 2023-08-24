@@ -13,7 +13,6 @@ const categoryCtrl = {
         res.send(category)
     },
     addCategory: async (req, res) => {
-        const { id } = req.params;
         const { categoryName } = req.body;
         const {categoryImg} = req.files;
         if(!categoryName || !categoryImg) return res.status(403).send({message: "Please fill all fields"})
