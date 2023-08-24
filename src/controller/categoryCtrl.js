@@ -1,4 +1,6 @@
 const Categories = require("../model/categoryModel");
+const Questions = require("../model/questionModel")
+
 const {uploadedFile, deleteFile, removeTemp} = require("../services/cloudinary")
 const categoryCtrl = {
     viewCategories: async (req, res) => {
@@ -34,6 +36,7 @@ const categoryCtrl = {
         try {
             const category = await Categories.findById(id)
             const imgId = category.categoryImg.public_id
+            await 
             await deleteFile(imgId).then(async ()=>{
                 await Categories.findByIdAndDelete(id)
                 res.status(200).send({ message: "Category deleted successfully" })

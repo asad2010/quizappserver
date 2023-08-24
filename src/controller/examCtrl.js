@@ -13,8 +13,8 @@ const examCtrl = {
     addExam: async (req,res) => {
         try {
             const {examName, questionsCount, time} = req.body;
-            const questions = await QuestionModel.aggregate([{ $sample: { size: questionsCount } }]);
-            const exam = Exams.create({
+            const questions = await Questions.aggregate([{ $sample: { size: questionsCount * 1 } }]);
+            const exam = await Exams.create({
                 examName,
                 questionsCount,
                 time,
@@ -23,7 +23,7 @@ const examCtrl = {
             res.send({message: "Exam successfully added", exam})
         } catch (error) {
             console.error(error)
-            res.send({ message: "Something went wrong..." })
+            res.status(500).send({ message: "Something went wrong..." })
         }
     },
     delExam: async (req, res) => {
