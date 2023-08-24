@@ -1,7 +1,6 @@
 {
   "name": "1-jamoa-quiz-backend",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -23,5 +22,17 @@
     "express-fileupload": "^1.4.0",
     "jsonwebtoken": "^9.0.1",
     "mongoose": "^7.4.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asad2010/quizappserver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/asad2010/quizappserver/issues"
+  },
+  "homepage": "https://github.com/asad2010/quizappserver#readme",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
