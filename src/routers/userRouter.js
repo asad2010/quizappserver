@@ -11,7 +11,7 @@ router.post("/admin/teachers", userCtrl.addTeacher)
 
 
 // update
-router.post("/profile/:id/changeProfileImg", userCtrl.updateProfileImg)
+router.post("/profile/:id", userCtrl.updUser)
 //delete
 router.delete("/admin/teachers/:id", userCtrl.delUser)
 router.delete("/admin/students/:id", userCtrl.delUser)

@@ -27,10 +27,10 @@ app.get("/", (req,res)=>{
 // routers
 app.use("/", authRouter)
 app.use("/", userRouter)
-app.use("/admin", categoryRouter)
+app.use("/admin/", categoryRouter)
 app.use("/admin/groups", groupRouter)
 app.use("/", examRouter)
-app.use("/questions", questionRouter)
+app.use("/admin/questions", questionRouter)
 
 // server
 const PORT = process.env.PORT || 4005;
