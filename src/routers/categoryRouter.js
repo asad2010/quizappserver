@@ -6,5 +6,6 @@ router.get("/categories", categoryCtrl.viewCategories)
 router.get("/categories/:id", categoryCtrl.viewOneCategory)
 router.post("/categories", categoryCtrl.addCategory)
 router.delete('/categories/:id', categoryCtrl.delCategory)
+router.patch("/categories/:id", categoryCtrl.updCategory)
 
 module.exports = router

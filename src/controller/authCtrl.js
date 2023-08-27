@@ -17,14 +17,10 @@ const authCtrl = {
 
       const hashedPassword = await bcrypt.hash(req.body.password, 12);
       req.body.password = hashedPassword
-
       if(req.body.role) {
         req.body.role = Number(req.body.role);
       }
-      const user = new Users(req.body)
-
-      await user.save()
-
+      const user = await Users.create(req.body)
       const token = JWT.sign({email: user.email, id: user._id, role: user.role}, JWT_SECRET_KEY, {expiresIn: "50h"});
 
       const {password, ...otherDetails} = user._doc;
@@ -50,7 +46,6 @@ const authCtrl = {
       const token = JWT.sign({email: existingUser.email, id: existingUser._id, role: existingUser.role}, JWT_SECRET_KEY, {expiresIn: "50h"});
 
       const {password, ...otherDetails} = existingUser._doc;
-      res.header("Email", existingUser.email)
       res.status(200).json({message: "login successfully!", user: otherDetails, token})
       
     } catch (error) {

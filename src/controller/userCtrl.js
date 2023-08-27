@@ -1,5 +1,5 @@
 const Users = require("../model/userModel");
-const { uploadedFile, deleteFile, removeTemp } = require("../services/cloudinary")
+const { uploadedFile, deleteFile } = require("../services/cloudinary")
 const bcrypt = require('bcrypt')
 const userCtrl = {
     viewProfile: async (req, res) => {
@@ -42,54 +42,28 @@ const userCtrl = {
             res.status(500).send({ message: "Something went wrong..." })
         }
     },
-    // A D D
-
-    addTeacher: async (req, res) => {
-        try {
-            const { firstName, lastName, email, password } = req.body;
-            const isTeacherExists = await Users.findOne({ email })
-            if (isTeacherExists) {
-                return res.status(403).send({ message: "Teacher already exists" })
-            }
-            const hashedPassword = await bcrypt.hash(password, 12)
-            const teacher = await Users.create({
-                firstName,
-                lastName,
-                email,
-                password: hashedPassword,
-                role: 101
-            })
-            const teacherWithoutPassword = await Users.findById(teacher._id).select("-password")
-            res.status(201).send({ message: "Teacher created successfully", teacher: teacherWithoutPassword })
-        } catch (error) {
-            console.error(error)
-            res.status(500).send({ message: "Something went wrong..." })
-        }
-    },
-
     updUser: async (req, res) => {
         const { id } = req.params;
-        const { profilePicture } = req.files;
         try {
             const user = await Users.findById(id)
             if (!user) return res.status(404).send({ message: "User not found" })
-            const updatedUser = await Users.findByIdAndUpdate(id, req.body, { new: true })
+            
 
             // update profile img
-            if (profilePicture) {
+            if (req.files) {
+                const {profilePicture} = req.files
                 if (profilePicture.mimetype == "image/png" || profilePicture.mimetype == "image/jpeg") {
                     const result = await uploadedFile(profilePicture)
+                    req.body.profilePicture = result;
                     if (user.profilePicture.public_id) {
                         await deleteFile(user.profilePicture.public_id)
                     }
-                    const updatedProfileImg = await Users.findByIdAndUpdate(id, {
-                        profilePicture: result
-                    }, { new: true })
                 } else {
-                    removeTemp(profilePicture.tempFilePath);
                     return res.status(400).json({ message: "File format is should png or jpeg!" })
                 }
-            }
+            }            
+            const updatedUser = await Users.findByIdAndUpdate(id, req.body, { new: true })
+
             const { password, ...otherDetails } = updatedUser._doc
             res.status(200).send({ message: "User successfully updated", user: otherDetails })
         } catch (error) {
@@ -102,13 +76,12 @@ const userCtrl = {
         try {
             const user = await Users.findById(id)
             if (!user) return res.status(403).send({ message: "User not found" })
-            const profilePicture = user.profilePicture
-            if (profilePicture == "" || !profilePicture) { 
-                await Users.findByIdAndDelete(id);
-            } else {
-                await deleteFile(profilePicture.public_id)
-                await Users.findByIdAndDelete(id)
+            
+            if (user.profilePicture.public_id) { 
+                await deleteFile(user.profilePicture.public_id)
             }
+
+            await Users.findByIdAndDelete(id)
             res.status(200).send({message: "User deleted successfully!"})
         } catch (error) {
             res.status(500).send({ message: "Something went wrong..." })
