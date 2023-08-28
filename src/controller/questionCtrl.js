@@ -39,11 +39,15 @@ const questionCtrl = {
     delQuestion: async (req, res) => {
         const { id } = req.params;
         try {
-            await Questions.findByIdAndDelete(id)
+            const categoryOne = await Categories.find();
+            const category = await Categories.findOne({_id: {$in: categoryOne}})
+            console.log(category)
+            if(!category) return res.status(404).send({message: "Category not found"})
+            // await Questions.findByIdAndDelete(id)
             res.send({ message: "Question deleted successfully" })
         } catch (error) {
             console.error(error)
-            res.send({ message: "Something went wrong..." })
+            res.status(500).send({ message: "Something went wrong..." })
         }
     },
 

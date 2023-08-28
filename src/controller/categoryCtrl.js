@@ -12,19 +12,21 @@ const categoryCtrl = {
     },
     addCategory: async (req, res) => {
         const { categoryName } = req.body;
-        const {categoryImg} = req.files;
-        if(!categoryName || !categoryImg) return res.status(403).send({message: "Please fill all fields"})
-        try {
-            const result = await uploadedFile(categoryImg)
-            if(!result) return res.status(402).send({message: "Something went wrong"})
-            const category = await Categories.create({
-                categoryName,
-                categoryImg: result
-            })
-            res.send({ message: "Category created successfully", category })
-        } catch (error) {
-            console.error(error)
-            res.send({ message: "Something went wrong" })
+        if(req.files.categoryImg){
+            const {categoryImg} = req.files;
+            if(!categoryName || !categoryImg) return res.status(403).send({message: "Please fill all fields"})
+            try {
+                const result = await uploadedFile(categoryImg)
+                if(!result) return res.status(402).send({message: "Something went wrong"})
+                const category = await Categories.create({
+                    categoryName,
+                    categoryImg: result
+                })
+                res.send({ message: "Category created successfully", category })
+            } catch (error) {
+                console.error(error)
+                res.send({ message: "Something went wrong" })
+            }
         }
     },
     
@@ -33,10 +35,9 @@ const categoryCtrl = {
         try {
             const category = await Categories.findById(id)
             const imgId = category.categoryImg.public_id
-            await deleteFile(imgId).then(async ()=>{
-                await Categories.findByIdAndDelete(id)
-                res.status(200).send({ message: "Category deleted successfully" })
-            })
+            await deleteFile(imgId)
+            await Categories.findByIdAndDelete(id)
+            res.status(200).send({ message: "Category deleted successfully" })
         } catch (error) {
             console.error(error)
             res.send({ message: "Something went wrong..." })
