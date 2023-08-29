@@ -1,6 +1,6 @@
 const Users = require("../model/userModel");
-const { uploadedFile, deleteFile } = require("../services/cloudinary")
-const bcrypt = require('bcrypt')
+const { uploadFile, deleteFile } = require("../services/cloudinary")
+const bcrypt = require('bcrypt') 
 const userCtrl = {
     viewProfile: async (req, res) => {
         try {
@@ -53,7 +53,7 @@ const userCtrl = {
             if (req.files) {
                 const {profilePicture} = req.files
                 if (profilePicture.mimetype == "image/png" || profilePicture.mimetype == "image/jpeg") {
-                    const result = await uploadedFile(profilePicture)
+                    const result = await uploadFile(profilePicture)
                     req.body.profilePicture = result;
                     if (user.profilePicture.public_id) {
                         await deleteFile(user.profilePicture.public_id)
