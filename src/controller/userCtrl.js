@@ -1,5 +1,6 @@
 const Users = require("../model/userModel");
-const { uploadedFile, deleteFile, removeTemp } = require("../services/cloudinary")
+const { uploadedFile, deleteFile } = require("../services/cloudinary")
+const bcrypt = require('bcrypt')
 const userCtrl = {
     viewProfile: async (req, res) => {
         try {
@@ -12,31 +13,11 @@ const userCtrl = {
             res.status(500).send({ message: "Something went wrong..." })
         }
     },
-    viewOneUser: async (req,res) => {
+    viewOneUser: async (req, res) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             const user = await Users.findById(id)
             res.status(200).send(user)
-        } catch (error) {
-            console.error(error)
-            res.status(500).send({message: "Something went wrong..."})
-        }
-    },
-    updateProfileImg: async (req,res) => {
-        try {
-            const {id} = req.params;
-            const {profileImg} = req.files;
-            const user = await Users.findById(id)
-            if(!user) return res.status(404).send({message: "USER NOT FOUND"})
-            const result = await uploadedFile(profileImg)
-            if(user.profilePicture.public_id){
-                // await cloudinary.uploader.destroy(user.profilePicture.public_id)
-                await deleteFile(user.profilePicture.public_id)
-            }
-            const updatedProfileImg = await Users.findByIdAndUpdate(id, {
-                profilePicture: result
-            }, {new: true})
-            res.send({ message: "Profile image updated successfully", profilePicture: result})
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong..." })
@@ -46,7 +27,7 @@ const userCtrl = {
     viewStudents: async (req, res) => {
         try {
             const students = await Users.find({ role: 100 }).select("-password");
-            res.json(students)
+            res.status(200).json(students)
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong..." })
@@ -54,61 +35,57 @@ const userCtrl = {
     },
     viewTeachers: async (req, res) => {
         try {
-            const teachers = await Users.find({ role: 101 })
-            res.json(teachers)
-        } catch (error) {
-            console.error(error)
-            res.send({ message: "Something went wrong..." })
-        }
-    },
-    // A D D
-
-    addTeacher: async (req, res) => {
-        try {
-            const { firstName, lastName, email, password } = req.body;
-            const isTeacherExists = await Users.findOne({ email })
-            if (isTeacherExists) {
-                return res.status(403).send({ message: "Teacher already exists" })
-            }
-            const teacher = await Users.create({
-                firstName,
-                lastName,
-                email,
-                password,
-                role: 101
-            })
-            res.send({ message: "Teacher created successfully" })
-        } catch (error) {
-            console.error(error)
-            res.send({ message: "Something went wrong..." })
-        }
-    },
-
-    updStudent: async (req, res) => {
-        const { id } = req.params;
-        try {
-            await Users.findByIdAndUpdate(id, req.body, {new: true})
-            res.status(200).send({ message: "User successfully updated" })
+            const teachers = await Users.find({ role: 101 }).select("-password")
+            res.status(200).json(teachers)
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong..." })
+        }
+    },
+    updUser: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const user = await Users.findById(id)
+            if (!user) return res.status(404).send({ message: "User not found" })
+            
+
+            // update profile img
+            if (req.files) {
+                const {profilePicture} = req.files
+                if (profilePicture.mimetype == "image/png" || profilePicture.mimetype == "image/jpeg") {
+                    const result = await uploadedFile(profilePicture)
+                    req.body.profilePicture = result;
+                    if (user.profilePicture.public_id) {
+                        await deleteFile(user.profilePicture.public_id)
+                    }
+                } else {
+                    return res.status(400).json({ message: "File format is should png or jpeg!" })
+                }
+            }            
+            const updatedUser = await Users.findByIdAndUpdate(id, req.body, { new: true })
+
+            const { password, ...otherDetails } = updatedUser._doc
+            res.status(200).send({ message: "User successfully updated", user: otherDetails })
+        } catch (error) {
+            res.status(500).send({ message: "Something went wrong..." })
+            console.error(error)
         }
     },
     delUser: async (req, res) => {
         const { id } = req.params;
         try {
             const user = await Users.findById(id)
-            if(!user) return res.status(403).send({message: "User not found"})
-            const profilePicture = await Users.findById(id).select("profilePicture").public_id
-            if(profilePicture == "") return (await Users.findByIdAndDelete(id), res.status(200).send({message: "OK"}))
-            else {
-                await deleteFile(profilePicture)
-                await Users.findByIdAndDelete(id)
-                res.send({ message: "User deleted successfully" })
+            if (!user) return res.status(403).send({ message: "User not found" })
+            
+            if (user.profilePicture.public_id) { 
+                await deleteFile(user.profilePicture.public_id)
             }
+
+            await Users.findByIdAndDelete(id)
+            res.status(200).send({message: "User deleted successfully!"})
         } catch (error) {
+            res.status(500).send({ message: "Something went wrong..." })
             console.error(error)
-            res.send({ message: "Something went wrong..." })
         }
     },
 

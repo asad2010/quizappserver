@@ -33,7 +33,7 @@ const questionCtrl = {
             res.send({ message: "Question created successfully" })
         } catch (error) {
             console.error(error)
-            res.send({ message: "Something went wrong" })
+            res.status(500).send({ message: "Something went wrong" })
         }
     },
     delQuestion: async (req, res) => {
@@ -42,9 +42,9 @@ const questionCtrl = {
             const categoryOne = await Categories.find();
             const category = await Categories.findOne({_id: {$in: categoryOne}})
             console.log(category)
+
             if(!category) return res.status(404).send({message: "Category not found"})
-            // await Questions.findByIdAndDelete(id)
-            res.send({ message: "Question deleted successfully" })
+            res.status(200).send({ message: "Question deleted successfully" })
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong..." })
