@@ -67,7 +67,7 @@ const categoryCtrl = {
                     return res.status(400).json({ message: "File format is should png or jpeg!" })
                 }
             }            
-            const updatedCategory = await Users.findByIdAndUpdate(id, req.body, { new: true })
+            const updatedCategory = await Categories.findByIdAndUpdate(id, req.body, { new: true })
             const { password, ...otherDetails } = updatedCategory._doc
             res.status(200).send({ message: "User successfully updated", category: otherDetails })
         } catch (error) {
