@@ -16,7 +16,7 @@ const removeTemp = (path) => {
   })
 }
 
-const uploadedFile = async (file) => {
+const uploadFile = async (file) => {
   let image = {}
   await cloudinary.v2.uploader.upload(file.tempFilePath, {folder: "first-jamoa"}, async (err, result) => {
     if(err) {
@@ -45,4 +45,4 @@ const deleteFile = async (public_id) => {
   }
 }
 
-module.exports = {uploadedFile, deleteFile, removeTemp}
+module.exports = {uploadFile, deleteFile}

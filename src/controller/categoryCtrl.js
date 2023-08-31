@@ -1,7 +1,7 @@
 const Categories = require("../model/categoryModel");
-const {uploadedFile, deleteFile} = require("../services/cloudinary")
 const Questions = require("../model/questionModel")
 
+const { uploadedFile, deleteFile } = require("../services/cloudinary")
 const categoryCtrl = {
     viewCategories: async (req, res) => {
         try {
@@ -33,7 +33,7 @@ const categoryCtrl = {
             const {categoryImg} = req.files
             if (categoryImg.mimetype == "image/png" || categoryImg.mimetype == "image/jpeg") {
                 try {
-                    const result = await uploadedFile(categoryImg)
+                    const result = await uploadFile(categoryImg)
                     if (!result) return res.status(402).send({ message: "Something went wrong" })
                     const category = await Categories.create({
                         categoryName,
@@ -58,7 +58,7 @@ const categoryCtrl = {
             if (req.files) {
                 const {categoryImg} = req.files
                 if (categoryImg.mimetype == "image/png" || categoryImg.mimetype == "image/jpeg") {
-                    const result = await uploadedFile(categoryImg)
+                    const result = await uploadFile(categoryImg)
                     req.body.categoryImg = result;
                     if (user.categoryImg.public_id) {
                         await deleteFile(user.categoryImg.public_id)
