@@ -30,7 +30,7 @@ const questionCtrl = {
             const category = await Categories.findOne({_id: newQuestion.category})
             if(!category) return res.status(404).send({message: "Category not found"})
             await Categories.findOneAndUpdate({_id: newQuestion.category},{$push: {questions: newQuestion}})
-            res.send({ message: "Question created successfully" })
+            res.send({ message: "Question created successfully" , newQuestion})
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong" })
@@ -42,7 +42,15 @@ const questionCtrl = {
             const categoryOne = await Categories.find();
             const category = await Categories.findOne({_id: {$in: categoryOne}})
             console.log(category)
-
+            const deleteQuestion = category.questions
+            if(deleteQuestion==id){
+                await Categories.updateOne(
+                    { _id: category._id},
+                    { $pull: { questions: id }} 
+                  )
+            }else {
+                res.status(403).send({message: "Category don't have this question"})
+            }
             if(!category) return res.status(404).send({message: "Category not found"})
             res.status(200).send({ message: "Question deleted successfully" })
         } catch (error) {
