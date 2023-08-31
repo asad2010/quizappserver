@@ -1,7 +1,7 @@
 const Categories = require("../model/categoryModel");
 const Questions = require("../model/questionModel")
 
-const { uploadedFile, deleteFile } = require("../services/cloudinary")
+const { uploadFile, deleteFile } = require("../services/cloudinary")
 const categoryCtrl = {
     viewCategories: async (req, res) => {
         try {
