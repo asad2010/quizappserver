@@ -48,7 +48,9 @@ const userCtrl = {
             const user = await Users.findById(id)
             if (!user) return res.status(404).send({ message: "User not found" })
             
-
+            const {email} = req.body;
+            const isExists = await Users.findOne({email})
+            if(isExists) return res.status(402).send({message: "User already exists"})
             // update profile img
             if (req.files) {
                 const {profilePicture} = req.files
