@@ -17,7 +17,7 @@ const categoryCtrl = {
             const { id } = req.params;
             const category = await Categories.findById(id)
             if(!category) return res.status(404).send({message: "Category not found"})
-            res.send(category)
+            res.status(200).send(category)
         } catch(error){
             console.error(error)
             res.status(500).send({message: "Something went wrong"})

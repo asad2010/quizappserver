@@ -5,7 +5,7 @@ const questionCtrl = {
     viewQuestions: async (req, res) => {
         try {
             const questions = await Questions.find()
-            res.send(questions)
+            res.status(200).send(questions)
         } catch (error) {
             console.error(error)
             res.status(500).send({message: "Something went wrong..."})
@@ -16,7 +16,7 @@ const questionCtrl = {
             const {id} = req.params;
             const question = await Questions.findOne({id})
             if(!question) return res.status(404).send({message: "Question not found"})
-            res.send(question)
+            res.status(200).send(question)
         } catch(error){
             console.error(error)
             res.status(500).send({message: "Something went wrong..."})
@@ -24,6 +24,9 @@ const questionCtrl = {
     },
     addQuestion: async (req, res) => {
         try {
+            const {question} = req.body;
+            const isExists = await Questions.findOne({question})
+            if(isExists) return res.status(402).send({message: "This question already exists!"})
             const newQuestion = await Questions.create(
                 req.body
             )

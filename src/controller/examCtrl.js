@@ -4,10 +4,10 @@ const examCtrl = {
     viewExams: async (req, res) => {
         try {
             const exams = await Exams.find();
-            res.send(exams)
+            res.status(200).send(exams)
         } catch (error) {
             console.error(error)
-            res.send({ message: "Something went wrong..." })
+            res.status(500).send({ message: "Something went wrong..." })
         }
     },
     addExam: async (req,res) => {
@@ -20,7 +20,7 @@ const examCtrl = {
                 time,
                 questions
             })
-            res.send({message: "Exam successfully added", exam})
+            res.status(201).send({message: "Exam successfully added", exam})
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong..." })
@@ -30,10 +30,10 @@ const examCtrl = {
         const { id } = req.params;
         try {
             await Exams.findByIdAndDelete(id)
-            res.send({ message: "Exam deleted successfully" })
+            res.status(200).send({ message: "Exam deleted successfully" })
         } catch (error) {
             console.error(error)
-            res.send({ message: "Something went wrong..." })
+            res.status(500).send({ message: "Something went wrong..." })
         }
     }
 }

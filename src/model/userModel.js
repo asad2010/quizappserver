@@ -9,7 +9,7 @@ const UserSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    group: {type: mongoose.Schema.Types.ObjectId, ref: 'Group'},
+    group: {type: String, ref: 'Group'},
     email: {
       type: String,
       required: true,
