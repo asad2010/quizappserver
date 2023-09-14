@@ -5,7 +5,7 @@ const questionCtrl = {
     viewQuestions: async (req, res) => {
         try {
             const questions = await Questions.find()
-            res.send(questions)
+            res.status(200).send(questions)
         } catch (error) {
             console.error(error)
             res.status(500).send({message: "Something went wrong..."})
@@ -36,13 +36,16 @@ const questionCtrl = {
     },
     addQuestion: async (req, res) => {
         try {
+            const {question} = req.body;
+            const isExists = await Questions.findOne({question})
+            if(isExists) return res.status(402).send({message: "This question already exists!"})
             const newQuestion = await Questions.create(
                 req.body
             )
             const category = await Categories.findOne({_id: newQuestion.category})
             if(!category) return res.status(404).send({message: "Category not found"})
             await Categories.findOneAndUpdate({_id: newQuestion.category},{$push: {questions: newQuestion}})
-            res.send({ message: "Question created successfully" })
+            res.status(201).send({ message: "Question created successfully" , newQuestion})
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong" })
@@ -64,7 +67,16 @@ const questionCtrl = {
                 res.status(403).send({message: "Category don't have this question"})
             }
             if(!category) return res.status(404).send({message: "Category not found"})
-            res.status(200).send({ message: "Question deleted successfully" })
+            const deleteQuestion = category.questions
+            if(deleteQuestion==id){
+                await Categories.updateOne(
+                    { _id: category._id},
+                    { $pull: { questions: id }} 
+                    )
+                res.status(200).send({ message: "Question deleted successfully" })
+            } else {
+                res.status(403).send({message: "Category don't have this question"})
+            }
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong..." })

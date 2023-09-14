@@ -19,9 +19,7 @@ const groupCtrl = {
         const { groupName, teacher, company } = req.body;
         try {
             const group = await Groups.findOne({ groupName })
-            if (group) {
-                return res.status(401).send({ message: "This group already exists!" })
-            }
+            if (group) return res.status(401).send({ message: "This group already exists!" })
             await Groups.create({
                 groupName,
                 teacher,

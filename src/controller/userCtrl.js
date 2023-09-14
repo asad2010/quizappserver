@@ -7,17 +7,7 @@ const userCtrl = {
             const { id } = req.params;
             const user = await Users.findById(id)
             const { password, ...otherData } = user._doc
-            res.status(200).send(otherData)
-        } catch (error) {
-            console.error(error)
-            res.status(500).send({ message: "Something went wrong..." })
-        }
-    },
-    viewOneUser: async (req, res) => {
-        try {
-            const { id } = req.params;
-            const user = await Users.findById(id)
-            res.status(200).send(user)
+            res.status(200).send({user: otherData})
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong..." })
@@ -48,7 +38,9 @@ const userCtrl = {
             const user = await Users.findById(id)
             if (!user) return res.status(404).send({ message: "User not found" })
             
-
+            const {email} = req.body;
+            const isExists = await Users.findOne({email})
+            if(isExists) return res.status(402).send({message: "User already exists"})
             // update profile img
             if (req.files) {
                 const {profilePicture} = req.files
@@ -74,14 +66,12 @@ const userCtrl = {
     delUser: async (req, res) => {
         const { id } = req.params;
         try {
-            const user = await Users.findById(id)
-            if (!user) return res.status(403).send({ message: "User not found" })
+            const user = await Users.findByIdAndDelete(id)
+            if (!user) return res.status(404).send({ message: "User not found" })
             
             if (user.profilePicture.public_id) { 
                 await deleteFile(user.profilePicture.public_id)
-            }
-
-            await Users.findByIdAndDelete(id)
+            }            
             res.status(200).send({message: "User deleted successfully!"})
         } catch (error) {
             res.status(500).send({ message: "Something went wrong..." })
