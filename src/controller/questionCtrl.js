@@ -12,11 +12,23 @@ const questionCtrl = {
         }
     },
     viewOneQuestion: async (req,res) => {
-        try {
-            const {id} = req.params;
-            const question = await Questions.findOne({id})
-            if(!question) return res.status(404).send({message: "Question not found"})
-            res.send(question)
+            try {
+                const { id } = req.params;
+                const category = await Categories.aggregate([
+                    {$match: {_id: new mongoose.Types.ObjectId(id)}},
+                    { $lookup: 
+                        {
+                            from: "questions",
+                            localField: "_id",
+                            foreignField: "category",
+                            as: "questions"
+                            
+                        }
+                    }
+                ]);
+                
+            if(!category) return res.status(404).send({message: "Question not found"})
+            res.send(category)
         } catch(error){
             console.error(error)
             res.status(500).send({message: "Something went wrong..."})
