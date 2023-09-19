@@ -81,12 +81,11 @@ const categoryCtrl = {
     delCategory: async (req, res) => {
         const { id } = req.params;
         try {
-            const category = await Categories.findById(id)
+            const category = await Categories.findByIdAndDelete(id)
             if(!category) return res.status(404).send({message: "Category not found"})
             const imgId = category.categoryImg.public_id
             await deleteFile(imgId)
             await Questions.deleteMany({category: id})
-            await Categories.findByIdAndDelete(id)
             res.status(200).send({ message: "Category deleted successfully" })
         } catch (error) {
             console.error(error)
