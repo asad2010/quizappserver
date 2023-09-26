@@ -66,17 +66,6 @@ const questionCtrl = {
             }else {
                 res.status(403).send({message: "Category don't have this question"})
             }
-            if(!category) return res.status(404).send({message: "Category not found"})
-            const deleteQuestion = category.questions
-            if(deleteQuestion==id){
-                await Categories.updateOne(
-                    { _id: category._id},
-                    { $pull: { questions: id }} 
-                    )
-                res.status(200).send({ message: "Question deleted successfully" })
-            } else {
-                res.status(403).send({message: "Category don't have this question"})
-            }
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong..." })
