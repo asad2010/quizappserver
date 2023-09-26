@@ -6,6 +6,7 @@ const userCtrl = {
         try {
             const { id } = req.params;
             const user = await Users.findById(id)
+            if(!user) return res.status(404).send({message: "User not found!"})
             const { password, ...otherData } = user._doc
             res.status(200).send({user: otherData})
         } catch (error) {
@@ -55,7 +56,6 @@ const userCtrl = {
                 }
             }            
             const updatedUser = await Users.findByIdAndUpdate(id, req.body, { new: true })
-
             const { password, ...otherDetails } = updatedUser._doc
             res.status(200).send({ message: "User successfully updated", user: otherDetails })
         } catch (error) {
@@ -78,6 +78,34 @@ const userCtrl = {
             console.error(error)
         }
     },
+    allowUser: async (req,res) => {
+        try {
+            const {id} = req.params;
+
+            const user = await Users.findByIdAndUpdate(id, {allow: true}) 
+
+            if(!user) return res.status(404).send({message: "User not found"})
+
+            res.status(200).send({message: "User allowed to exams"})
+        } catch (error) {
+            console.error(error)
+            res.status(500).send({message: "Something went wrong"})
+        }
+    },
+    unAllowUser: async (req,res) => {
+        try {
+            const {id} = req.params;
+
+            const user = await Users.findByIdAndUpdate(id, {allow: false}) 
+
+            if(!user) return res.status(404).send({message: "User not found"})
+
+            res.status(200).send({message: "User unallowed to exams"})
+        } catch (error) {
+            console.error(error)
+            res.status(500).send({message: "Something went wrong"})
+        }
+    }
 
 }
 

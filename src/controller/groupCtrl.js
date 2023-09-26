@@ -2,19 +2,27 @@ const Groups = require("../model/groupModel")
 
 const groupCtrl = {
     viewGroups: async (req, res) => {
-        const groups = await Groups.find();
-        res.json(groups)
+        try {
+            const groups = await Groups.find();
+            res.json(groups)
+        } catch (error) {
+            console.log(error);
+            res.send({message: "Something went wrong"})
+        }
+        
     },
-    delGroup: async (req, res) => {
+        
+    viewOneGroups: async (req, res) => {
         const { id } = req.params;
         try {
-            await Groups.findByIdAndDelete(id)
-            res.send({ message: "Group deleted successfully" })
+         const groupsOne = await Groups.findById(id);
+           if(!groupsOne) return res.status("Groups not found") 
         } catch (error) {
-            console.error(error)
-            res.send({ message: "Something went wrong..." })
+            console.log(error);
+            res.send({message: "Something went wrong error"})
         }
     },
+
     addGroup: async (req, res) => {
         const { groupName, teacher, company } = req.body;
         try {
@@ -32,10 +40,12 @@ const groupCtrl = {
             res.send({ message: "Something went wrong..." })
         }
     },
+
     updGroup: async (req, res) => {
+        const { id } = req.params;
         try {
             const { groupName, company } = req.body;
-            await Groups.findByIdAndUpdate(req.params.id, {
+            await Groups.findByIdAndUpdate(req.params.id, id, {
                 groupName,
                 company
             })
@@ -45,6 +55,20 @@ const groupCtrl = {
             res.send({ message: "Something went wrong..." })
         }
     },
+
+    delGroup: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const group = await Groups.findByIdAndDelete(id)
+            if(!group) return res.status(404).send({message: "Group not found"})
+            res.status(201).send({message: "Group delete successfully"})
+        } catch (error) {
+            console.error(error)
+            res.send({ message: "Something went wrong..." })
+        }
+    },
+   
+    
 
     
 }

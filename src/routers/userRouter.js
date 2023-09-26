@@ -9,6 +9,9 @@ router.get("/admin/students", userCtrl.viewStudents)
 
 // update
 router.patch("/profile/:id", userCtrl.updUser)
+router.patch("/admin/students/allow/:id", userCtrl.allowUser)
+router.patch("/admin/students/unallow/:id", userCtrl.unAllowUser)
+
 //delete
 router.delete("/admin/teachers/:id", userCtrl.delUser)
 router.delete("/admin/students/:id", userCtrl.delUser)
