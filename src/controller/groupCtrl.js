@@ -2,8 +2,15 @@ const Groups = require("../model/groupModel")
 
 const groupCtrl = {
     viewGroups: async (req, res) => {
-        const groups = await Groups.find();
-        res.json(groups)
+        try {
+            
+            const groups = await Groups.find();
+            res.json(groups)
+        }
+        catch(error){
+            console.error(error)
+            res.send({message: "Something went wrong"})
+        }
     },
     delGroup: async (req, res) => {
         const { id } = req.params;
