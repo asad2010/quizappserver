@@ -12,11 +12,23 @@ const questionCtrl = {
         }
     },
     viewOneQuestion: async (req,res) => {
-        try {
-            const {id} = req.params;
-            const question = await Questions.findOne({id})
-            if(!question) return res.status(404).send({message: "Question not found"})
-            res.status(200).send(question)
+            try {
+                const { id } = req.params;
+                const category = await Categories.aggregate([
+                    {$match: {_id: new mongoose.Types.ObjectId(id)}},
+                    { $lookup: 
+                        {
+                            from: "questions",
+                            localField: "_id",
+                            foreignField: "category",
+                            as: "questions"
+                            
+                        }
+                    }
+                ]);
+                
+            if(!category) return res.status(404).send({message: "Question not found"})
+            res.send(category)
         } catch(error){
             console.error(error)
             res.status(500).send({message: "Something went wrong..."})
@@ -42,8 +54,18 @@ const questionCtrl = {
     delQuestion: async (req, res) => {
         const { id } = req.params;
         try {
-            const categories = await Categories.find();
-            const category = await Categories.findOne({_id: {$in: categories}})
+            const categoryOne = await Categories.find();
+            const category = await Categories.findOne({_id: {$in: categoryOne}})
+            console.log(category)
+            const deleteQuestion = category.questions
+            if(deleteQuestion==id){
+                await Categories.updateOne(
+                    { _id: category._id},
+                    { $pull: { questions: id }} 
+                  )
+            }else {
+                res.status(403).send({message: "Category don't have this question"})
+            }
             if(!category) return res.status(404).send({message: "Category not found"})
             const deleteQuestion = category.questions
             if(deleteQuestion==id){
