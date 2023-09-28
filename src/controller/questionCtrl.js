@@ -51,6 +51,16 @@ const questionCtrl = {
             res.status(500).send({ message: "Something went wrong" })
         }
     },
+
+    updQuestion: async (req, res) => {
+        const { id } = req.params;
+        try {
+            
+        } catch (error) {
+            console.error(error)
+        }
+    },
+    
     delQuestion: async (req, res) => {
         const { id } = req.params;
         try {
