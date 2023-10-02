@@ -43,8 +43,8 @@ const groupCtrl = {
             const { groupName } = req.body;
             const group = await Groups.findOne({ groupName })
             if (group) return res.status(400).send({ message: "Group already exists" })
-            await Groups.findByIdAndUpdate(req.params.id, id, req.body)
-            res.status(200).send({ message: "Group updated successfully" })
+            const updatedGroup = await Groups.findByIdAndUpdate(id, req.body, {new: true})
+            res.status(200).send({ message: "Group updated successfully", group: updatedGroup})
         } catch (error) {
             res.status(500).send({ message: "Something went wrong..." })
             console.error(error)
