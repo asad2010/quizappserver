@@ -119,10 +119,10 @@ const userCtrl = {
     },
     addHistory: async (req, res) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             const body = req.body;
-            const user = await Users.findByIdAndUpdate(id, {history: {$push: body}});
-            if(!user) return res.status(404).send({message: "User not found"})
+            const user = await Users.findByIdAndUpdate(id, { history: { $push: body } });
+            if (!user) return res.status(404).send({ message: "User not found" })
             res.status(200).send(user)
         } catch (error) {
             console.error(error)

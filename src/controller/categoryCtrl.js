@@ -1,5 +1,5 @@
 const Categories = require("../model/categoryModel");
-const Questions = require("../model/questionModel")
+const Questions = require("../model/questionModel");
 
 const { uploadFile, deleteFile } = require("../services/cloudinary")
 const categoryCtrl = {
