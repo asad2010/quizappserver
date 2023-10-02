@@ -6,7 +6,8 @@ const HistorySchema = new mongoose.Schema({
     date: {type: mongoose.Schema.Types.Date},
     solved: {type: Number, required: true},
     solvedProcent: {type: Number, required: true},
-    status: {type: Boolean, default: false}
+    status: {type: Boolean, default: false},
+    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
 })
 
 module.exports = mongoose.model("History", HistorySchema)

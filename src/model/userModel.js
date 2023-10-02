@@ -28,7 +28,7 @@ const UserSchema = mongoose.Schema(
       default: "",
     },
     allow: {type: Boolean, default: false},
-    history: {type: Object, ref: "History"}
+    history: [{type: mongoose.Schema.Types.ObjectId, ref: "History"}]
   },
   {timestamps: true}
 )

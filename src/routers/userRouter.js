@@ -13,8 +13,6 @@ router.patch("/admin/students/allow/:id", userCtrl.allowUser)
 router.patch("/admin/students/unallow/:id", userCtrl.unAllowUser)
 
 //delete
-router.delete("/admin/teachers/:id", userCtrl.delUser)
-router.delete("/admin/students/:id", userCtrl.delUser)
-
+router.delete("/admin/users/:id", userCtrl.delUser)
 
 module.exports = router;

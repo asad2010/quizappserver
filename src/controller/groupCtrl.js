@@ -4,55 +4,50 @@ const groupCtrl = {
     viewGroups: async (req, res) => {
         try {
             const groups = await Groups.find();
-            res.json(groups)
+            res.status(200).send(groups)
         } catch (error) {
             console.log(error);
-            res.send({message: "Something went wrong"})
+            res.status(500).send({ message: "Something went wrong" })
         }
-        
+
     },
-        
+
     viewOneGroups: async (req, res) => {
         const { id } = req.params;
         try {
-         const groupsOne = await Groups.findById(id);
-           if(!groupsOne) return res.status("Groups not found") 
+            const groupOne = await Groups.findById(id);
+            if (!groupOne) return res.status(404).send("Group not found")
+            res.status(200).send(groupOne)
         } catch (error) {
+            res.status(500).send({ message: "Something went wrong" })
             console.log(error);
-            res.send({message: "Something went wrong error"})
         }
     },
 
     addGroup: async (req, res) => {
-        const { groupName, teacher, company } = req.body;
+        const { groupName } = req.body;
         try {
             const group = await Groups.findOne({ groupName })
             if (group) return res.status(401).send({ message: "This group already exists!" })
-            await Groups.create({
-                groupName,
-                teacher,
-                company
-            }).then(() => {
-                res.send({ message: "Group created successfully" })
-            })
+            await Groups.create(req.body)
+            res.status(200).send({ message: "Group created successfully" })
         } catch (error) {
             console.error(error)
-            res.send({ message: "Something went wrong..." })
+            res.status(500).send({ message: "Something went wrong..." })
         }
     },
 
     updGroup: async (req, res) => {
         const { id } = req.params;
         try {
-            const { groupName, company } = req.body;
-            await Groups.findByIdAndUpdate(req.params.id, id, {
-                groupName,
-                company
-            })
-            res.send({ message: "Group updated successfully" })
+            const { groupName } = req.body;
+            const group = await Groups.findOne({ groupName })
+            if (group) return res.status(400).send({ message: "Group already exists" })
+            const updatedGroup = await Groups.findByIdAndUpdate(id, req.body, {new: true})
+            res.status(200).send({ message: "Group updated successfully", group: updatedGroup})
         } catch (error) {
+            res.status(500).send({ message: "Something went wrong..." })
             console.error(error)
-            res.send({ message: "Something went wrong..." })
         }
     },
 
@@ -60,17 +55,17 @@ const groupCtrl = {
         const { id } = req.params;
         try {
             const group = await Groups.findByIdAndDelete(id)
-            if(!group) return res.status(404).send({message: "Group not found"})
-            res.status(201).send({message: "Group delete successfully"})
+            if (!group) return res.status(404).send({ message: "Group not found" })
+            res.status(201).send({ message: "Group delete successfully" })
         } catch (error) {
+            res.status(500).send({ message: "Something went wrong..." })
             console.error(error)
-            res.send({ message: "Something went wrong..." })
         }
     },
-   
-    
 
-    
+
+
+
 }
 
 module.exports = groupCtrl;
