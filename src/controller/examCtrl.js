@@ -79,7 +79,8 @@ const examCtrl = {
     delExam: async (req, res) => {
         const { id } = req.params;
         try {
-            await Exams.findByIdAndDelete(id)
+            const deletedExam = await Exams.findByIdAndDelete(id);
+            if(!deletedExam) return res.status(404).send({message: "Exam not found"})
             res.status(200).send({ message: "Exam deleted successfully" })
         } catch (error) {
             console.error(error)
