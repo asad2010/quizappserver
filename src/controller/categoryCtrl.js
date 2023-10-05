@@ -56,7 +56,7 @@ const categoryCtrl = {
             if(!category)return res.status(404).send({message: "Category not found"})
             const {categoryName} = req.body;
             const isExists = await Categories.findOne({categoryName})
-            if(isExists) return res.status(402).send({message: "category a;ready exists"})
+            if(isExists) return res.status(402).send({message: "category already exists"})
             // update profile img
             if (req.files) {
                 const {categoryImg} = req.files
