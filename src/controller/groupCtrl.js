@@ -6,8 +6,8 @@ const groupCtrl = {
             const groups = await Groups.find();
             res.status(200).send(groups)
         } catch (error) {
-            console.log(error);
             res.status(500).send({ message: "Something went wrong" })
+            console.log(error);
         }
 
     },
@@ -29,8 +29,8 @@ const groupCtrl = {
         try {
             const group = await Groups.findOne({ groupName })
             if (group) return res.status(401).send({ message: "This group already exists!" })
-            await Groups.create(req.body)
-            res.status(200).send({ message: "Group created successfully" })
+            const newGroup = await Groups.create(req.body);
+            res.status(200).send({ message: "Group created successfully", group: newGroup })
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong..." })
@@ -42,7 +42,7 @@ const groupCtrl = {
         try {
             const { groupName } = req.body;
             const group = await Groups.findOne({ groupName })
-            if (group) return res.status(400).send({ message: "Group already exists" })
+            if (group) return res.status(400).send({ message: "This named group already exists" })
             const updatedGroup = await Groups.findByIdAndUpdate(id, req.body, {new: true})
             res.status(200).send({ message: "Group updated successfully", group: updatedGroup})
         } catch (error) {

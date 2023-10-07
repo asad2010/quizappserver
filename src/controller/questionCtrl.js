@@ -37,16 +37,13 @@ const questionCtrl = {
     },
     addQuestion: async (req, res) => {
         try {
-            const { question } = req.body;
-            const isExists = await Questions.findOne({ question })
+            const { questionText, category } = req.body;
+            const findCategory = await Categories.findOne({ _id: category })
+            if (!findCategory) return res.status(404).send({ message: "Category not found" })
+            const isExists = await Questions.findOne({ questionText })
             if (isExists) return res.status(402).send({ message: "This question already exists!" })
-            const newQuestion = await Questions.create(
-                req.body
-            )
-            const category = await Categories.findOne({ _id: newQuestion.category })
-            if (!category) return res.status(404).send({ message: "Category not found" })
-            await Categories.findOneAndUpdate({ _id: newQuestion.category }, { $push: { questions: newQuestion } })
-            res.status(201).send({ message: "Question created successfully", newQuestion })
+            const newQuestion = await Questions.create(req.body)            
+            res.status(201).send({ message: "Question created successfully", question: newQuestion })
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong" })
@@ -56,27 +53,23 @@ const questionCtrl = {
     updQuestion: async (req, res) => {
         const { id } = req.params;
         try {
-
+            const updateQuestion = await Questions.findByIdAndUpdate(id, req.body, {new: true})
+            if(updateQuestion) {
+                return res.status(200).send({message: "Update question successfully", question: updateQuestion})
+            }
         } catch (error) {
             console.error(error)
+            res.status(500).send({message: "Something went wrong"})
         }
     },
 
     delQuestion: async (req, res) => {
         const { id } = req.params;
         try {
-            const categoryOne = await Categories.find();
-            const category = await Categories.findOne({ _id: { $in: categoryOne } })
-            console.log(category)
-            const deleteQuestion = category.questions
-            if (deleteQuestion == id) {
-                await Categories.updateOne(
-                    { _id: category._id },
-                    { $pull: { questions: id } }
-                )
-            } else {
-                res.status(403).send({ message: "Category don't have this question" })
-            }
+            const question = await Questions.findById(id);
+            if(!question) return res.status(404).send({message: "Question not found"})
+            await Questions.findByIdAndDelete(id);
+            res.status(200).send({message: "Question deleted successfully"})
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: "Something went wrong..." })

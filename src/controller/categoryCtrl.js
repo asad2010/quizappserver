@@ -7,30 +7,30 @@ const categoryCtrl = {
         try {
             const categories = await Categories.find()
             res.status(200).send(categories)
-        } catch(error){
+        } catch (error) {
             console.error(error)
-            res.status(500).send({message: "Something went wrong"})
+            res.status(500).send({ message: "Something went wrong" })
         }
     },
     viewOneCategory: async (req, res) => {
         try {
             const { id } = req.params;
             const category = await Categories.findById(id)
-            if(!category) return res.status(404).send({message: "Category not found"})
+            if (!category) return res.status(404).send({ message: "Category not found" })
             res.status(200).send(category)
-        } catch(error){
+        } catch (error) {
             console.error(error)
-            res.status(500).send({message: "Something went wrong"})
+            res.status(500).send({ message: "Something went wrong" })
         }
     },
     addCategory: async (req, res) => {
         const { categoryName } = req.body;
 
-        if(!categoryName) return res.status(403).send({message: "Please fill all fields"})
-        const isCategoryExists = await Categories.findOne({categoryName})
-        if(isCategoryExists) return res.status(403).send({message: "Category already exists"})
+        if (!categoryName) return res.status(403).send({ message: "Please fill all fields" })
+        const isCategoryExists = await Categories.findOne({ categoryName })
+        if (isCategoryExists) return res.status(403).send({ message: "Category already exists" })
         if (req.files) {
-            const {categoryImg} = req.files
+            const { categoryImg } = req.files
             if (categoryImg.mimetype == "image/png" || categoryImg.mimetype == "image/jpeg") {
                 try {
                     const result = await uploadFile(categoryImg)
@@ -45,7 +45,7 @@ const categoryCtrl = {
                     res.status(500).send({ message: "Something went wrong" })
                 }
             } else {
-                res.status(403).send({message: "File must be on format png or jpeg"})
+                res.status(403).send({ message: "File must be on format png or jpeg" })
             }
         }
     },
@@ -53,13 +53,13 @@ const categoryCtrl = {
         const { id } = req.params;
         try {
             const category = await Categories.findById(id)
-            if(!category)return res.status(404).send({message: "Category not found"})
-            const {categoryName} = req.body;
-            const isExists = await Categories.findOne({categoryName})
-            if(isExists) return res.status(402).send({message: "category already exists"})
+            if (!category) return res.status(404).send({ message: "Category not found" })
+            const { categoryName } = req.body;
+            const isExists = await Categories.findOne({ categoryName })
+            if (isExists) return res.status(402).send({ message: "Category already exists" })
             // update profile img
             if (req.files) {
-                const {categoryImg} = req.files
+                const { categoryImg } = req.files
                 if (categoryImg.mimetype == "image/png" || categoryImg.mimetype == "image/jpeg") {
                     const result = await uploadFile(categoryImg)
                     req.body.categoryImg = result;
@@ -69,7 +69,7 @@ const categoryCtrl = {
                 } else {
                     return res.status(400).json({ message: "File format is should png or jpeg!" })
                 }
-            }            
+            }
             const updatedCategory = await Categories.findByIdAndUpdate(id, req.body, { new: true })
             const { password, ...otherDetails } = updatedCategory._doc
             res.status(200).send({ message: "User successfully updated", category: otherDetails })
@@ -82,10 +82,10 @@ const categoryCtrl = {
         const { id } = req.params;
         try {
             const category = await Categories.findByIdAndDelete(id)
-            if(!category) return res.status(404).send({message: "Category not found"})
+            if (!category) return res.status(404).send({ message: "Category not found" })
             const imgId = category.categoryImg.public_id
             await deleteFile(imgId)
-            await Questions.deleteMany({category: id})
+            await Questions.deleteMany({ category: id })
             res.status(200).send({ message: "Category deleted successfully" })
         } catch (error) {
             console.error(error)
